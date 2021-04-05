@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" packagingData="true">
+    <property scope="context" name="modulename" value="warehouse"/>
+    <property scope="context" name="appname" value="inventory-service"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-6level ${appname} ${modulename} %logger{70}.%M %X{transactionId} %X{timeTakenInMilli}  - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--root log level, can be overridden by its children-->
+    <root level="error">
+        <!-- <appender-ref ref="FILE-ROLLING"/>-->
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="com.mywarehouse.inventory" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    '
+
+    <logger name="org.springframework" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+</configuration>

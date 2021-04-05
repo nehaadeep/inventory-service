@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS inventory;
+
+CREATE TABLE inventory (
+  id INT AUTO_INCREMENT  PRIMARY KEY,
+  article_id VARCHAR(250) NOT NULL,
+  name VARCHAR(250) NOT NULL,
+  stock INT DEFAULT NOT NULL
+);

@@ -1,0 +1,11 @@
+{
+  "modelPackage": "com.mywarehouse.inventory.model",
+  "apiPackage": "com.mywarehouse.inventory.api",
+  "invokerPackage": "com.mywarehouse.inventory.api",
+  "dateLibrary"            : "joda",
+  "sourceFolder"           : "src/main/java",
+  "interfaceOnly"          : "true",
+  "skipDefaultInterface"   : "true",
+  "hideGenerationTimestamp": "true",
+  "serializableModel"      : "true"
+}

@@ -1,0 +1,45 @@
+
+// JACOCO configuration
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("$buildDir/jacoco/reports/jacoco-xml")
+        html.enabled true
+        html.destination file("$buildDir/jacoco/reports/jacoco-html")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: []
+            )
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.3 // change this value as per the recommended code coverage
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+test {
+    useJUnitPlatform()
+}

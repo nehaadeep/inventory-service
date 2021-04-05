@@ -1,0 +1,137 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id 'org.sonarqube' version '2.8'
+    id 'maven-publish'
+    id 'jacoco'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
+    id 'net.researchgate.release' version '2.8.1'
+}
+
+group 'com.mywarehouse.inventory'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+def swagger_annotations_version = "1.6.1"
+def spring_fox_version = "2.9.2"
+def jackson_version = "2.10.2"
+def jackson_datatype_version = "2.10.2"
+def logback_version = "1.2.3"
+def logback_json_version = "0.1.5"
+def logstash_logback_encoder_version = "6.2"
+def logbook_zalando_version = "1.13.0"
+def commons_lang_version = "2.6"
+def lombok_version = "1.18.12"
+def commons_lang3_version = "3.8"
+def joda_time_version = "2.10.4"
+def jupiterVersion = "5.6.2"
+def mockitoVersion = "3.4.4"
+def mockitoAllVersion = "1.10.19"
+def javaxValidationVersion = '2.0.1.Final'
+def swaggerCliVersion = '3.0.5'
+def guavaVersion = "30.1-jre"
+def apacheHttpClientVersion = "4.5.13"
+def jackson_databind_version = "2.10.5.1"
+def junitVersion = "4.13.1"
+def tomcatEmbedVersion = "9.0.41"
+def apacheCommonIoVersion = "2.8.0"
+
+dependencies {
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: "${tomcatEmbedVersion}"
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: "${tomcatEmbedVersion}"
+    implementation "org.apache.httpcomponents:httpclient:${apacheHttpClientVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter') {
+        exclude module: 'logback-classic'
+        exclude module: 'logback-core'
+    }
+    implementation "joda-time:joda-time:${joda_time_version}"
+
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+
+    compileOnly('org.springframework.data:spring-data-commons')
+    compileOnly('org.springframework.boot:spring-boot-starter-hateoas')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    compileOnly "org.projectlombok:lombok:${lombok_version}"
+    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+
+    implementation "com.fasterxml.jackson.core:jackson-core:${jackson_version}"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${jackson_version}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jackson_databind_version}"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${jackson_version}"
+
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:${jackson_datatype_version}"
+    implementation "net.logstash.logback:logstash-logback-encoder:${logstash_logback_encoder_version}"
+    compileOnly "ch.qos.logback:logback-core:${logback_version}"
+    implementation "ch.qos.logback:logback-classic:${logback_version}"
+    compileOnly "ch.qos.logback.contrib:logback-jackson:${logback_json_version}"
+    implementation("ch.qos.logback.contrib:logback-json-classic:${logback_json_version}") {
+        exclude module: 'logback-classic'
+    }
+    compileOnly "ch.qos.logback:logback-access:${logback_version}"
+    compileOnly "org.zalando:logbook-spring-boot-starter:${logbook_zalando_version}"
+    compileOnly "commons-lang:commons-lang:${commons_lang_version}"
+
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
+
+    implementation "com.google.guava:guava:${guavaVersion}"
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    compileOnly "io.swagger:swagger-annotations:${swagger_annotations_version}"
+    implementation "io.springfox:springfox-swagger2:${spring_fox_version}"
+    implementation "io.springfox:springfox-swagger-ui:${spring_fox_version}"
+    swaggerCodegen "io.swagger.codegen.v3:swagger-codegen-cli:${swaggerCliVersion}"
+    implementation group: 'javax.validation', name: 'validation-api', version: "${javaxValidationVersion}"
+    implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+    implementation group: 'commons-io', name: 'commons-io', version: "${apacheCommonIoVersion}"
+
+
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${jupiterVersion}"
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${jupiterVersion}"
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${jupiterVersion}"
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: "${mockitoVersion}"
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: "${mockitoVersion}"
+    testImplementation group: 'org.mockito', name: 'mockito-all', version: "${mockitoAllVersion}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+generateSwaggerCode {
+    inputFile = file("${rootDir}/src/main/resources/InventoryContract.yaml".toString())
+    language = 'spring'
+    outputDir = file("$rootDir/generated".toString())
+    components = [apis: true, models: true]
+    configFile = file("$rootDir/src/main/resources/swagger-config.json".toString())
+}
+
+compileJava.dependsOn tasks.generateSwaggerCode
+
+sourceSets.main.java.srcDirs += "$rootDir/generated/src/main/java"
+
+release {
+    tagTemplate = "${name}-${version}"
+    git {
+        requireBranch = 'main'
+        pushToRemote = 'origin'
+        pushToBranchPrefix = ''
+        commitVersionFileOnly = false
+        signTag = false
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'project-report'
+apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
+apply from: './gradle/jacocoCoverage.gradle'

@@ -1,0 +1,144 @@
+openapi: 3.0.1
+info:
+  title: Inventory Management System API
+  description: Inventory management system where you can buy products.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080/inventory-service'
+paths:
+  /product:
+    get:
+      summary: Get all products
+      description: Get all products and quantity of each that is an available with the current inventory.
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: Get all products and quantity of each that is an available with the current inventory.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad request error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Buy products
+      description: Buy products which you like
+      operationId: buyProducts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        description: List of products to purchase
+      responses:
+        '200':
+          description: Buy products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad request error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    InventoryRequest:
+      type: object
+      properties:
+        inventory:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
+    ProductRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+      title: ProductRequest
+    ProductResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+      title: ProductResponse
+    Inventory:
+      type: object
+      properties:
+        articleId:
+          type: string
+        name:
+          type: string
+        stock:
+          type: integer
+      title: Inventory
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errorDetails:
+          type: array
+          items:
+            type: string
+      title: ErrorResponse
+    MultiStatusResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        responseDetails:
+          type: array
+          items:
+            type: string
+      title: MultiStatusResponse
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+      title: Product
+    Article:
+      type: object
+      properties:
+        id:
+          type: string
+        quantity:
+          type: integer
+      title: Article
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
